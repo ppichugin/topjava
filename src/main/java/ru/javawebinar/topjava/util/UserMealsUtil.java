@@ -30,6 +30,8 @@ public class UserMealsUtil {
         mealsTo.forEach(System.out::println);
 
         System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+
+        System.out.println(filteredByOneStream(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -60,6 +62,26 @@ public class UserMealsUtil {
                     LocalDateTime currentDateTime = meal.getDateTime();
                     return new UserMealWithExcess(currentDateTime, meal.getDescription(), meal.getCalories(),
                             (datesMap.get(currentDateTime.toLocalDate()) > caloriesPerDay));
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static List<UserMealWithExcess> filteredByOneStream(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return meals
+                .stream()
+                .collect(Collectors.groupingBy(userMeal -> userMeal.getDateTime().toLocalDate()))
+                .values()
+                .stream()
+                .flatMap(mealForCurrentDay -> {
+                    int sumOfDailyCalories = mealForCurrentDay
+                            .stream()
+                            .mapToInt(UserMeal::getCalories)
+                            .sum();
+                    boolean isExceeded = sumOfDailyCalories > caloriesPerDay;
+                    return mealForCurrentDay
+                            .stream()
+                            .filter(m -> TimeUtil.isBetweenHalfOpen(m.getDateTime().toLocalTime(), startTime, endTime))
+                            .map(m -> new UserMealWithExcess(m.getDateTime(), m.getDescription(), m.getCalories(), isExceeded));
                 })
                 .collect(Collectors.toList());
     }
