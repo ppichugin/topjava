@@ -9,21 +9,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MapMealStorage implements Dao<Meal> {
+public class CollectionMealDao implements Dao<Meal> {
     private final Map<Integer, Meal> storage = new ConcurrentHashMap<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1000);
 
-    public MapMealStorage() {
-        for (Meal meal : MealsUtil.meals) {
-            add(meal);
-        }
+    public CollectionMealDao() {
+        MealsUtil.meals.forEach(this::add);
     }
 
     @Override
     public Meal add(Meal item) {
         int id = getNextId();
-        storage.put(id, new Meal(id, item));
-        return storage.get(id);
+        Meal newMeal = new Meal(id, item.getDateTime(), item.getDescription(), item.getCalories());
+        return storage.computeIfAbsent(id, integer -> newMeal);
     }
 
     @Override
@@ -33,8 +31,8 @@ public class MapMealStorage implements Dao<Meal> {
 
     @Override
     public Meal update(Meal item) {
-        storage.replace(item.getId(), item);
-        return storage.get(item.getId());
+        Meal existing = new Meal(item.getId(), item.getDateTime(), item.getDescription(), item.getCalories());
+        return storage.computeIfPresent(item.getId(), (integer, meal) -> existing);
     }
 
     @Override

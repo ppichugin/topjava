@@ -1,8 +1,8 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import ru.javawebinar.topjava.dao.CollectionMealDao;
 import ru.javawebinar.topjava.dao.Dao;
-import ru.javawebinar.topjava.dao.MapMealStorage;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -27,7 +27,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        storage = new MapMealStorage();
+        storage = new CollectionMealDao();
     }
 
     @Override
@@ -38,12 +38,13 @@ public class MealServlet extends HttpServlet {
         LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"));
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
-        if (id == null || id.equals("")) {
+        Meal meal = new Meal(id.isEmpty() ? null : Integer.parseInt(id), dateTime, description, calories);
+        if (id.isEmpty()) {
             log.debug("doPost - added new meal");
-            storage.add(new Meal(dateTime, description, calories));
+            storage.add(meal);
         } else {
             log.debug("doPost - updated meal: {}", id);
-            storage.update(new Meal(Integer.parseInt(id), new Meal(dateTime, description, calories)));
+            storage.update(meal);
         }
         List<MealTo> mealToList = notFilteredMealToList();
         request.setAttribute("mealList", mealToList);

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
@@ -8,13 +8,12 @@
 </head>
 <script>
     window.addEventListener("load", function () {
-        var now = new Date();
-        var offset = now.getTimezoneOffset() * 60000;
-        var adjustedDate = new Date(now.getTime() - offset);
-        var formattedDate = adjustedDate.toISOString().substring(0, 16);
-        var datetimeField = document.getElementById("myDatetimeField");
+        let datetimeField = document.getElementById("dateTime");
         if (datetimeField.value.length === 0) {
-            datetimeField.value = formattedDate;
+            let now = new Date();
+            let offset = now.getTimezoneOffset() * 60000;
+            let adjustedDate = new Date(now.getTime() - offset);
+            datetimeField.value = adjustedDate.toISOString().substring(0, 16);
         }
     });
 </script>
@@ -22,26 +21,26 @@
 <h3><a href="index.html">Home</a></h3>
 <section>
     <div align="center">
-        <h2><c:out value="${empty meal.id ? 'Добавить' : 'Обновить'}"/></h2>
+        <h2>${empty meal.id ? 'Добавить' : 'Обновить'}</h2>
         <form method="POST" action="meals" enctype="application/x-www-form-urlencoded">
+            <label><input readonly="readonly" name="id" value="${meal.id}" hidden/></label>
             <table>
-                <input readonly="readonly" name="id" value="${meal.id}" hidden/>
                 <tr>
                     <th>Атрибут</th>
                     <th>Значение</th>
                 </tr>
                 <tr>
                     <td>Дата/время</td>
-                    <td><input type="datetime-local" name="dateTime" id="myDatetimeField" value="${meal.dateTime}"
-                               required/></td>
+                    <td><label for="dateTime"><input type="datetime-local" name="dateTime" id="dateTime"
+                                                     value="${meal.dateTime}" required/></label></td>
                 </tr>
                 <tr>
                     <td>Описание</td>
-                    <td><input type="text" name="description" value="${meal.description}"/></td>
+                    <td><label><input type="text" name="description" value="${meal.description}"/></label></td>
                 </tr>
                 <tr>
                     <td>Калории</td>
-                    <td><input type="number" name="calories" value="${meal.calories}" required/></td>
+                    <td><label><input type="number" name="calories" value="${meal.calories}" required/></label></td>
                 </tr>
             </table>
             <button type="submit" id="submitButton">Сохранить</button>
