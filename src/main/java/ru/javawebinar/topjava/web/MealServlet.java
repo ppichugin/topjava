@@ -1,10 +1,10 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.dao.MealDao;
+import ru.javawebinar.topjava.dao.Dao;
+import ru.javawebinar.topjava.dao.MapMealStorage;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.storage.ConcurHashMapImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletConfig;
@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -23,15 +22,12 @@ import static ru.javawebinar.topjava.util.MealsUtil.CALORIES_PER_DAY;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private MealDao storage;
-    private List<MealTo> mealToList;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+    private Dao<Meal> storage;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        storage = new ConcurHashMapImpl();
-        mealToList = notFilteredMealToList();
+        storage = new MapMealStorage();
     }
 
     @Override
@@ -39,22 +35,19 @@ public class MealServlet extends HttpServlet {
         log.debug("doPost");
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-        LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"), dateTimeFormatter);
+        LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"));
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
-        Meal newItem = new Meal(dateTime, description, calories);
-        if (id == null) {
-            log.debug("doPost - added new item");
-            storage.addItem(newItem);
+        if (id == null || id.equals("")) {
+            log.debug("doPost - added new meal");
+            storage.add(new Meal(dateTime, description, calories));
         } else {
-            log.debug("doPost - updated item: " + id);
-            Meal existing = storage.getItem(Integer.parseInt(id));
-            storage.deleteItem(existing.getId());
-            storage.updateItem(newItem);
+            log.debug("doPost - updated meal: {}", id);
+            storage.update(new Meal(Integer.parseInt(id), new Meal(dateTime, description, calories)));
         }
-        mealToList = notFilteredMealToList();
+        List<MealTo> mealToList = notFilteredMealToList();
         request.setAttribute("mealList", mealToList);
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        response.sendRedirect("meals");
     }
 
     @Override
@@ -62,33 +55,36 @@ public class MealServlet extends HttpServlet {
         log.debug("doGet");
         String action = request.getParameter("action");
         String mealId = request.getParameter("id");
-        Integer id = null;
-        Meal meal = null;
         if (action == null) {
-            log.debug("doGet - list");
-            request.setAttribute("mealList", mealToList);
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
-            return;
-        } else if (!"add".equals(action)) {
-            id = Integer.parseInt(mealId);
+            action = "list";
         }
+        Meal meal = null;
         switch (action) {
-            case "delete" -> {
-                log.debug("doGet - delete item " + id);
-                storage.deleteItem(id);
-                mealToList = notFilteredMealToList();
+            case "delete":
+                int id = Integer.parseInt(mealId);
+                log.debug("doGet - delete meal {}", id);
+                storage.delete(id);
                 response.sendRedirect("meals");
                 return;
-            }
-            case "update" -> {
-                log.debug("doGet - update item " + id);
-                meal = storage.getItem(id);
-            }
-            case "add" -> log.debug("doGet - add item");
-            default -> throw new IllegalArgumentException("Action " + action + " is illegal");
+            case "update":
+                id = Integer.parseInt(mealId);
+                log.debug("doGet - update meal {}", id);
+                meal = storage.get(id);
+                break;
+            case "add":
+                log.debug("doGet - add item");
+                break;
+            case "list":
+                log.debug("doGet - list");
+                request.setAttribute("mealList", notFilteredMealToList());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                return;
+            default:
+                response.sendRedirect("meals");
+                return;
         }
         request.setAttribute("meal", meal);
-        request.getRequestDispatcher("/edit.jsp").forward(request, response);
+        request.getRequestDispatcher("/editMeal.jsp").forward(request, response);
     }
 
     private List<MealTo> notFilteredMealToList() {

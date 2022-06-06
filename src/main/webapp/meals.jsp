@@ -13,7 +13,6 @@
 <hr>
 <div align="center">
     <h2>Meals</h2>
-    <p>Норма калорий в день: <%=MealsUtil.CALORIES_PER_DAY%></p>
 </div>
 <section>
     <table border="1" cellpadding="8" cellspacing="0" align="center">
@@ -31,7 +30,7 @@
             <c:set value="${meal.id}" var="id"/>
             <tr style="color:${meal.excess ? 'red' : 'green'}">
                 <fmt:parseDate value="${meal.dateTime}" type="date" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"/>
-                <fmt:formatDate value="${parsedDate}" type="date" pattern="dd-MM-yyyy HH:mm" var="dateOfMeal"/>
+                <fmt:formatDate value="${parsedDate}" type="date" pattern="yyyy-MM-dd HH:mm" var="dateOfMeal"/>
                 <td>${dateOfMeal}</td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
