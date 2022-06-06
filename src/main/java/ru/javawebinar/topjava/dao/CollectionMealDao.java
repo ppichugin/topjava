@@ -20,8 +20,9 @@ public class CollectionMealDao implements Dao<Meal> {
     @Override
     public Meal add(Meal item) {
         int id = getNextId();
-        Meal newMeal = new Meal(id, item.getDateTime(), item.getDescription(), item.getCalories());
-        return storage.computeIfAbsent(id, integer -> newMeal);
+        Meal newWithId = new Meal(id, item.getDateTime(), item.getDescription(), item.getCalories());
+        storage.put(id, newWithId);
+        return newWithId;
     }
 
     @Override
@@ -31,8 +32,8 @@ public class CollectionMealDao implements Dao<Meal> {
 
     @Override
     public Meal update(Meal item) {
-        Meal existing = new Meal(item.getId(), item.getDateTime(), item.getDescription(), item.getCalories());
-        return storage.computeIfPresent(item.getId(), (integer, meal) -> existing);
+        Meal copyToUpdate = new Meal(item.getId(), item.getDateTime(), item.getDescription(), item.getCalories());
+        return storage.computeIfPresent(item.getId(), (integer, meal) -> copyToUpdate);
     }
 
     @Override

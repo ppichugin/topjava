@@ -7,7 +7,7 @@ import java.util.List;
 public interface Dao<T> {
     T add(T item);
 
-    Meal get(int id);
+    T get(int id);
 
     T update(T item);
 

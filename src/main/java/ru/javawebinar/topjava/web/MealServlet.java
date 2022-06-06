@@ -46,8 +46,6 @@ public class MealServlet extends HttpServlet {
             log.debug("doPost - updated meal: {}", id);
             storage.update(meal);
         }
-        List<MealTo> mealToList = notFilteredMealToList();
-        request.setAttribute("mealList", mealToList);
         response.sendRedirect("meals");
     }
 
@@ -55,23 +53,23 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("doGet");
         String action = request.getParameter("action");
-        String mealId = request.getParameter("id");
         if (action == null) {
             action = "list";
         }
-        Meal meal = null;
         switch (action) {
-            case "delete":
-                int id = Integer.parseInt(mealId);
+            case "delete": {
+                int id = Integer.parseInt(request.getParameter("id"));
                 log.debug("doGet - delete meal {}", id);
                 storage.delete(id);
                 response.sendRedirect("meals");
                 return;
-            case "update":
-                id = Integer.parseInt(mealId);
+            }
+            case "update": {
+                int id = Integer.parseInt(request.getParameter("id"));
                 log.debug("doGet - update meal {}", id);
-                meal = storage.get(id);
+                request.setAttribute("meal", storage.get(id));
                 break;
+            }
             case "add":
                 log.debug("doGet - add item");
                 break;
@@ -84,7 +82,6 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
                 return;
         }
-        request.setAttribute("meal", meal);
         request.getRequestDispatcher("/editMeal.jsp").forward(request, response);
     }
 
