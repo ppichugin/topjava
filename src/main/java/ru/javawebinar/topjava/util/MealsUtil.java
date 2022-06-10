@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.to.MealTo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +26,15 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
     );
+    public static final List<Meal> mealsAdmin = Arrays.asList(
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 30, 10, 0), "Завтрак админа", 500),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 30, 13, 0), "Обед админа", 1000),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 30, 20, 0), "Ужин админа", 500),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 31, 0, 0), "Еда тест админа", 100),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 31, 10, 0), "Завтрак админа", 1000),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 31, 13, 0), "Обед админа", 500),
+            new Meal(LocalDateTime.of(2022, Month.JANUARY, 31, 20, 0), "Ужин админа", 410)
+    );
 
     public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {
         return filterByPredicate(meals, caloriesPerDay, meal -> true);
@@ -37,11 +46,7 @@ public class MealsUtil {
 
     private static List<MealTo> filterByPredicate(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
-                .collect(
-                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
-//                      Collectors.toMap(Meal::getDate, Meal::getCalories, Integer::sum)
-                );
-
+                .collect(Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories)));
         return meals.stream()
                 .filter(filter)
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
