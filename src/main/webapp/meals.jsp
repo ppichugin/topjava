@@ -39,25 +39,26 @@
     <h2>Meals</h2>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
-    <form method="get" action="${pageContext.request.contextPath}/meals">
+    <form method="get" action="meals">
         <input type="hidden" name="action" id="action" value="filter">
         <dl>
             <dt>Start date:</dt>
-            <dd><input type="date" name="startDate"></dd>
+            <dd><input type="date" value="${param.startDate}" id="startDate" name="startDate"></dd>
         </dl>
         <dl>
             <dt>End date:</dt>
-            <dd><input type="date" name="endDate"></dd>
+            <dd><input type="date" value="${param.endDate}" id="endDate" name="endDate"></dd>
         </dl>
         <dl>
             <dt>Start time:</dt>
-            <dd><input type="time" name="startTime"></dd>
+            <dd><input type="time" value="${param.startTime}" id="startTime" name="startTime"></dd>
         </dl>
         <dl>
-            <dt>End Time:</dt>
-            <dd><input type="time" name="endTime"></dd>
+            <dt>End time:</dt>
+            <dd><input type="time" value="${param.endTime}" id="endTime" name="endTime"></dd>
         </dl>
         <button type="submit">Filter</button>
+        <button onclick="window.location.href ='meals'" type="button">Cancel</button>
     </form>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>

@@ -21,10 +21,9 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        log.debug("taking current user");
         String userId = request.getParameter("user");
+        log.debug("taking current userId {}", userId);
         SecurityUtil.setAuthorizedUser(Integer.parseInt(userId));
-        request.getRequestDispatcher("").forward(request, response);
+        response.sendRedirect("meals");
     }
 }

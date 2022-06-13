@@ -48,9 +48,10 @@ public class MealRestController {
     }
 
     public Meal update(Meal meal, int mealId) {
-        log.info("update meal {}", meal);
+        int userId = SecurityUtil.authUserId();
         assureIdConsistent(meal, mealId);
-        return service.update(meal, SecurityUtil.authUserId());
+        log.info("update meal {} for user {}", meal, userId);
+        return service.update(meal, userId);
     }
 
     public List<MealTo> getFilteredList(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
@@ -59,7 +60,7 @@ public class MealRestController {
         startTime = startTime == null ? LocalTime.MIN : startTime;
         endTime = endTime == null ? LocalTime.MAX : endTime;
         log.info("get meals between {} and {} date, {} and {} time", startDate, endDate, startTime, endTime);
-        List<Meal> filteredMeals = service.getFiltered(startDate, endDate, SecurityUtil.authUserId());
-        return MealsUtil.getFilteredTos(filteredMeals, authUserCaloriesPerDay(), startTime, endTime);
+        List<Meal> filteredMealsByDates = service.getFiltered(SecurityUtil.authUserId(), startDate, endDate);
+        return MealsUtil.getFilteredTos(filteredMealsByDates, authUserCaloriesPerDay(), startTime, endTime);
     }
 }

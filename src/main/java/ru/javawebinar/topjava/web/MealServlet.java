@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -39,6 +40,7 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
+        log.info("doPost mealId={}", id);
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
@@ -56,7 +58,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        int userId = SecurityUtil.authUserId();
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -73,10 +74,10 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter":
-                LocalDate startDate = parseDate(request.getParameter("startDate"));
-                LocalDate endDate = parseDate(request.getParameter("endDate"));
-                LocalTime startTime = parseTime(request.getParameter("startTime"));
-                LocalTime endTime = parseTime(request.getParameter("endTime"));
+                LocalDate startDate = DateTimeUtil.parseDate(request.getParameter("startDate"));
+                LocalDate endDate = DateTimeUtil.parseDate(request.getParameter("endDate"));
+                LocalTime startTime = DateTimeUtil.parseTime(request.getParameter("startTime"));
+                LocalTime endTime = DateTimeUtil.parseTime(request.getParameter("endTime"));
                 request.setAttribute("meals", controller.getFilteredList(startDate, endDate, startTime, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
@@ -92,15 +93,5 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
-    }
-
-    private LocalDate parseDate(String dateStr) {
-        if (dateStr == null || dateStr.isEmpty()) return null;
-        return LocalDate.parse(dateStr);
-    }
-
-    private LocalTime parseTime(String timeStr) {
-        if (timeStr == null || timeStr.isEmpty()) return null;
-        return LocalTime.parse(timeStr);
     }
 }

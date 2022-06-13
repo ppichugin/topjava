@@ -21,11 +21,11 @@ public class InMemoryUserRepository implements UserRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        save(new User(getNextId(), "admin", "admin@test.com", "90xLl", Role.USER, Role.ADMIN));
-        save(new User(getNextId(), "user1", "user1@test.com", "TDNRtbI", Role.USER));
-        save(new User(getNextId(), "user2", "user2@test.com", "TDNRtbI", Role.USER));
-        save(new User(getNextId(), "usr_Marta", "marta@test.com", "TDNRtbI", Role.USER));
-        save(new User(getNextId(), "usr_Tom", "tom@test.com", "TDNRtbI", Role.USER));
+        save(new User(null, "admin", "admin@test.com", "90xLl", Role.USER, Role.ADMIN));
+        save(new User(null, "user1", "user1@test.com", "TDNRtbI", Role.USER));
+        save(new User(null, "user2", "user2@test.com", "TDNRtbI", Role.USER));
+        save(new User(null, "usr_Marta", "marta@test.com", "TDNRtbI", Role.USER));
+        save(new User(null, "usr_Tom", "tom@test.com", "TDNRtbI", Role.USER));
     }
 
     @Override
@@ -54,10 +54,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        Comparator<User> comparatorNameThenEmail = Comparator.comparing(User::getName).thenComparing(User::getEmail);
         return repository.values()
                 .stream()
-                .sorted(comparatorNameThenEmail)
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 
@@ -67,9 +66,5 @@ public class InMemoryUserRepository implements UserRepository {
         return repository.values()
                 .stream()
                 .filter(user -> user.getEmail().equalsIgnoreCase(email)).findFirst().orElse(null);
-    }
-
-    private int getNextId() {
-        return counter.incrementAndGet();
     }
 }
