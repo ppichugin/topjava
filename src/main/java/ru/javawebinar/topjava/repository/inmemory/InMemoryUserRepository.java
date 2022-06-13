@@ -37,11 +37,12 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         if (user.isNew()) {
+            log.info("save {}", user);
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
             return user;
         }
-        log.info("save {}", user);
+        log.info("existing user {}", user);
         return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 

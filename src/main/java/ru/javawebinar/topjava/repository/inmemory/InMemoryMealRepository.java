@@ -38,16 +38,13 @@ public class InMemoryMealRepository implements MealRepository {
             userMeals.put(meal.getId(), meal);
             return meal;
         }
-        if (get(meal.getId(), userId) == null) {
-            return null;
-        }
         log.debug("Update meal {} for user {}", meal.getId(), userId);
         return userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int mealId, int userId) {
-        Meal meal = repository.get(userId).get(mealId);
+        Map<Integer, Meal> meal = repository.get(userId);
         if (meal == null) {
             return false;
         }
@@ -57,7 +54,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int mealId, int userId) {
-        Meal meal = repository.get(userId).get(mealId);
+        Map<Integer, Meal> meal = repository.get(userId);
         if (meal == null) {
             return null;
         }
@@ -77,14 +74,10 @@ public class InMemoryMealRepository implements MealRepository {
 
     private List<Meal> filteredList(int userId, Predicate<Meal> filter) {
         Map<Integer, Meal> userMeals = repository.get(userId);
-        if (userMeals != null) {
-            return userMeals
-                    .values()
-                    .stream()
-                    .filter(filter)
-                    .sorted(Comparator.comparing(Meal::getDate).thenComparing(Meal::getTime).reversed())
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return userMeals != null ? userMeals.values().stream()
+                .filter(filter)
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList()) :
+                Collections.emptyList();
     }
 }

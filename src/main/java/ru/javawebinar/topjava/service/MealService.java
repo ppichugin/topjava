@@ -39,6 +39,8 @@ public class MealService {
     }
 
     public List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate) {
-        return repository.getAllFiltered(userId, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+        return repository.getAllFiltered(userId,
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay());
     }
 }
