@@ -44,22 +44,22 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int mealId, int userId) {
-        Map<Integer, Meal> meal = repository.get(userId);
-        if (meal == null) {
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        if (userMeals == null) {
             return false;
         }
         log.debug("Delete meal {} for user {}", mealId, userId);
-        return repository.get(userId).remove(mealId) != null;
+        return userMeals.remove(mealId) != null;
     }
 
     @Override
     public Meal get(int mealId, int userId) {
-        Map<Integer, Meal> meal = repository.get(userId);
-        if (meal == null) {
+        Map<Integer, Meal> userMeals = repository.get(userId);
+        if (userMeals == null) {
             return null;
         }
         log.debug("Get meal {} for user {}", mealId, userId);
-        return repository.get(userId).get(mealId);
+        return userMeals.get(mealId);
     }
 
     @Override
