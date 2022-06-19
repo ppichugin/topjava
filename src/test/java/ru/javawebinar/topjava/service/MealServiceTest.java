@@ -52,6 +52,12 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusive() {
         List<Meal> filtered = service.getBetweenInclusive(START_DATE, END_DATE, USER_ID);
+        assertMatch(filtered, userMeal3, userMeal2, userMeal1);
+    }
+
+    @Test
+    public void getBetweenInclusiveNullableScope() {
+        List<Meal> filtered = service.getBetweenInclusive(null, null, USER_ID);
         assertMatch(filtered, userMeal7, userMeal6, userMeal5, userMeal4, userMeal3, userMeal2, userMeal1);
     }
 
@@ -97,17 +103,17 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getUnknown() {
-        assertThrows(NotFoundException.class, () -> service.get(UNKNOWN_USER_ID, USER_ID));
+    public void getOtherPersonMeal() {
+        assertThrows(NotFoundException.class, () -> service.get(OTHER_PERSON_MEAL_ID, USER_ID));
     }
 
     @Test
-    public void updateUnknown() {
+    public void updateOtherPersonMeal() {
         assertThrows(NotFoundException.class, () -> service.update(getUpdated(), ADMIN_ID));
     }
 
     @Test
-    public void deleteUnknown() {
-        assertThrows(NotFoundException.class, () -> service.delete(UNKNOWN_USER_ID, USER_ID));
+    public void deleteOtherPersonMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(OTHER_PERSON_MEAL_ID, USER_ID));
     }
 }
