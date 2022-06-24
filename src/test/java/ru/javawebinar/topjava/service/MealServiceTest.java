@@ -19,8 +19,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
@@ -36,7 +34,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    private static final Map<String, Long> testsDuration = new LinkedHashMap<>();
+    private static final StringBuilder testsDuration = new StringBuilder();
+    private static final String format = "%-40s%s";
 
     @Autowired
     private MealService service;
@@ -48,22 +47,21 @@ public class MealServiceTest {
             long duration = runtime(TimeUnit.MILLISECONDS);
             String methodName = description.getMethodName();
             log.info(String.format("Test '%s' took %d ms", methodName, duration));
-            testsDuration.put(methodName, duration);
+            testsDuration.append(String.format(format, methodName, duration)).append("\n");
         }
     };
 
     @AfterClass
     public static void afterClass() {
-        StringBuilder stringBuilder = new StringBuilder();
-        String format = "%-40s%s";
-        stringBuilder.append("\n")
+        StringBuilder consolidatedTable = new StringBuilder();
+        consolidatedTable.append("\n")
                 .append("=====================================================").append("\n")
                 .append("Consolidation table of tests").append("\n")
                 .append("=====================================================").append("\n")
                 .append(String.format(format, "Test name", "Duration (ms)")).append("\n")
-                .append("-----------------------------------------------------").append("\n");
-        testsDuration.forEach((msg, time) -> stringBuilder.append(String.format(format, msg, time)).append("\n"));
-        log.info(String.valueOf(stringBuilder));
+                .append("-----------------------------------------------------").append("\n")
+                .append(testsDuration);
+        log.info(String.valueOf(consolidatedTable));
     }
 
     @Test
