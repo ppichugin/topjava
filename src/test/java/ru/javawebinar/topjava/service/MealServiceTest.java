@@ -1,10 +1,9 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Stopwatch;
-import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -36,9 +35,11 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
     private static final Map<String, Long> testsDuration = new LinkedHashMap<>();
+
+    @Autowired
+    private MealService service;
 
     @Rule
     public final Stopwatch stopwatch = new Stopwatch() {
@@ -46,27 +47,21 @@ public class MealServiceTest {
         protected void finished(long nanos, Description description) {
             long duration = runtime(TimeUnit.MILLISECONDS);
             String methodName = description.getMethodName();
-            log.info(String.format("Test '%s' successfully finished & took %d ms", methodName, duration));
+            log.info(String.format("Test '%s' took %d ms", methodName, duration));
             testsDuration.put(methodName, duration);
         }
     };
 
-    @ClassRule
-    public static final TestWatcher watcher = new TestWatcher() {
-        @Override
-        protected void finished(Description description) {
-            System.out.println("=====================================================================================");
-            System.out.println("Consolidation table of tests for " + description.getTestClass());
-            System.out.println("=====================================================================================");
-            String format = "%-40s%s%n";
-            System.out.printf(format, "Test name", "Duration (ms)");
-            System.out.println("-----------------------------------------------------");
-            testsDuration.forEach((msg, time) -> System.out.printf(format, msg, time));
-        }
-    };
-
-    @Autowired
-    private MealService service;
+    @AfterClass
+    public static void afterClass() {
+        log.info("=====================================================");
+        log.info("Consolidation table of tests");
+        log.info("=====================================================");
+        String format = "%-40s%s";
+        log.info(String.format(format, "Test name", "Duration (ms)"));
+        log.info("-----------------------------------------------------");
+        testsDuration.forEach((msg, time) -> log.info(String.format(format, msg, time)));
+    }
 
     @Test
     public void delete() {
