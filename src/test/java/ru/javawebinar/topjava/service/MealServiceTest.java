@@ -54,13 +54,16 @@ public class MealServiceTest {
 
     @AfterClass
     public static void afterClass() {
-        log.info("=====================================================");
-        log.info("Consolidation table of tests");
-        log.info("=====================================================");
+        StringBuilder stringBuilder = new StringBuilder();
         String format = "%-40s%s";
-        log.info(String.format(format, "Test name", "Duration (ms)"));
-        log.info("-----------------------------------------------------");
-        testsDuration.forEach((msg, time) -> log.info(String.format(format, msg, time)));
+        stringBuilder.append("\n")
+                .append("=====================================================").append("\n")
+                .append("Consolidation table of tests").append("\n")
+                .append("=====================================================").append("\n")
+                .append(String.format(format, "Test name", "Duration (ms)")).append("\n")
+                .append("-----------------------------------------------------").append("\n");
+        testsDuration.forEach((msg, time) -> stringBuilder.append(String.format(format, msg, time)).append("\n"));
+        log.info(String.valueOf(stringBuilder));
     }
 
     @Test
