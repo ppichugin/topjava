@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -16,21 +17,21 @@ import static ru.javawebinar.topjava.UserTestData.*;
 public class DataJpaMealServiceTest extends MealServiceTest {
 
     @Test
-    public void getMealWithUser() {
+    public void getWithUser() {
         Meal actual = service.getMealAndUser(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, adminMeal1);
         USER_MATCHER.assertMatch(actual.getUser(), admin);
     }
 
     @Test
-    public void getMealNotUser() {
+    public void getWithUserNotOwn() {
         Assert.assertThrows(NotFoundException.class,
                 () -> service.getMealAndUser(ADMIN_MEAL_ID, USER_ID));
     }
 
     @Test
-    public void getMealNotFound() {
+    public void getNotFoundUser() {
         Assert.assertThrows(NotFoundException.class,
-                () -> service.getMealAndUser(NOT_FOUND, NOT_FOUND));
+                () -> service.getMealAndUser(NOT_FOUND, UserTestData.NOT_FOUND));
     }
 }
