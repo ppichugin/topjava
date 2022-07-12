@@ -62,7 +62,7 @@ public class ValidationUtil {
         return rootCause != null ? rootCause : t;
     }
 
-    public static <T extends AbstractBaseEntity> void validationEntity(T parameter) {
+    public static <T extends AbstractBaseEntity> void validateEntity(T parameter) {
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(parameter);
         if (!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations);
