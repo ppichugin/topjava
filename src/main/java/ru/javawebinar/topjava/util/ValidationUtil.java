@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.util;
 
-
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
@@ -14,8 +13,8 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 public class ValidationUtil {
-    protected static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-    protected static final Validator validator = validatorFactory.getValidator();
+    private static final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+    private static final Validator validator = validatorFactory.getValidator();
 
     private ValidationUtil() {
     }
@@ -62,8 +61,8 @@ public class ValidationUtil {
         return rootCause != null ? rootCause : t;
     }
 
-    public static <T extends AbstractBaseEntity> void validateEntity(T parameter) {
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(parameter);
+    public static <T> void validateEntity(T parameter) {
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(parameter);
         if (!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations);
         }

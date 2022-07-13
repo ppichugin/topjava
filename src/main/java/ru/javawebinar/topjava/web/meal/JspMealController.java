@@ -22,7 +22,7 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 public class JspMealController extends AbstractMealController {
 
     @GetMapping("/create")
-    public String save(Model model) {
+    public String create(Model model) {
         Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         model.addAttribute("meal", meal);
         return "mealForm";
@@ -60,7 +60,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @PostMapping
-    public String getOnChange(HttpServletRequest request) {
+    public String save(HttpServletRequest request) {
         String dateTime = request.getParameter("dateTime");
         String description = request.getParameter("description");
         String calories = request.getParameter("calories");

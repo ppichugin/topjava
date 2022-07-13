@@ -17,6 +17,7 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,9 +54,9 @@ public class JdbcUserRepository implements UserRepository {
                    UPDATE users SET name=:name, email=:email, password=:password,
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                 """, parameterSource) != 0) {
-            removeRole(user.getId());
+            removeRoles(user.id());
         } else return null;
-        addRolesInBatch(user.getRoles(), user.getId());
+        addRolesInBatch(user.getRoles(), user.id());
         return user;
     }
 
@@ -88,24 +89,26 @@ public class JdbcUserRepository implements UserRepository {
                 LEFT JOIN user_roles ur ON id = ur.user_id GROUP BY id ORDER BY MAX(name), MAX(email)""", ROW_MAPPER);
     }
 
-    private void removeRole(final int userId) {
+    private void removeRoles(final int userId) {
         jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", userId);
     }
 
     private void addRolesInBatch(final Set<Role> roles, final int userId) {
-        List<Role> rolesById = roles.stream().toList();
-        jdbcTemplate.batchUpdate("INSERT INTO user_roles(role, user_id) VALUES (?, ?)",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setString(1, rolesById.get(i).name());
-                        ps.setInt(2, userId);
-                    }
+        List<Role> rolesById = new ArrayList<>(roles);
+        if (rolesById.size() > 0) {
+            jdbcTemplate.batchUpdate("INSERT INTO user_roles(role, user_id) VALUES (?, ?)",
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            ps.setString(1, rolesById.get(i).name());
+                            ps.setInt(2, userId);
+                        }
 
-                    @Override
-                    public int getBatchSize() {
-                        return rolesById.size();
-                    }
-                });
+                        @Override
+                        public int getBatchSize() {
+                            return rolesById.size();
+                        }
+                    });
+        }
     }
 }
