@@ -24,20 +24,20 @@ public class RootController {
     }
 
     @GetMapping("/")
-    public String root() {
+    public final String root() {
         log.info("root");
         return "index";
     }
 
     @GetMapping("/users")
-    public String getUsers(Model model) {
+    public final String getUsers(Model model) {
         log.info("users");
         model.addAttribute("users", userService.getAll());
         return "users";
     }
 
     @PostMapping("/users")
-    public String setUser(HttpServletRequest request) {
+    public final String setUser(HttpServletRequest request) {
         int userId = Integer.parseInt(request.getParameter("userId"));
         log.info("setUser {}", userId);
         SecurityUtil.setAuthUserId(userId);
@@ -45,11 +45,11 @@ public class RootController {
     }
 
     @GetMapping("/meals")
-    public String getAllMealForUser(Model model) {
+    public final String getAllMealForUser(Model model) {
         int userId = SecurityUtil.authUserId();
         log.info("get meals for user {}", userId);
-        model.addAttribute("meals", MealsUtil.getTos(
-                mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
+        model.addAttribute("meals",
+                MealsUtil.getTos(mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
         return "meals";
     }
 }
