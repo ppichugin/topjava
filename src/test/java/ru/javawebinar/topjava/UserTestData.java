@@ -30,7 +30,7 @@ public final class UserTestData {
     }
 
     public static User getNewWithRoles() {
-        return new User(null, "New with 2 roles", "new2@gmail.com", "newPass", 1000, false, new Date(), List.of(Role.USER, Role.ADMIN));
+        return new User(null, "New with 2 roles", "new2@gmail.com", "newPass", 1000, false, new Date(), null);
     }
 
     public static User getUpdated() {
