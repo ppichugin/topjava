@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
@@ -18,11 +17,13 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.util.MealsUtil.getTos;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -36,7 +37,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + MEAL1_ID))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
                 .andExpect(MEAL_MATCHER.contentJson(meal1));
     }
 
@@ -53,7 +54,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(mealTos));
     }
 
@@ -61,7 +62,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     void createWithLocation() throws Exception {
         Meal newMeal = MealTestData.getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal)))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -76,7 +77,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         Meal updated = MealTestData.getUpdated();
         perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -89,11 +90,26 @@ class MealRestControllerTest extends AbstractControllerTest {
                 LocalTime.of(10, 0),
                 LocalTime.of(13, 5));
         perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
-                .param("startDate", "2020-01-30T10:00:00")
-                .param("endDate", "2020-01-31T13:05:00"))
+                .param("startDate", "2020-01-30")
+                .param("startTime", "10:00")
+                .param("endDate", "2020-01-31")
+                .param("endTime", "13:05"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(expectedTos));
+    }
+
+    @Test
+    void getBetweenWithNulls() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+                .param("startDate", "")
+                .param("startTime", "")
+                .param("endDate", "")
+                .param("endTime", ""))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY)));
     }
 }
