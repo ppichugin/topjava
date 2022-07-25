@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
+import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
@@ -86,7 +87,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        List<MealTo> expectedTos = MealsUtil.getFilteredTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY,
+        List<MealTo> expectedTos = MealsUtil.getFilteredTos(meals, UserTestData.user.getCaloriesPerDay(),
                 LocalTime.of(10, 0),
                 LocalTime.of(13, 5));
         perform(MockMvcRequestBuilders.get(REST_URL + "filter")
@@ -110,6 +111,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, UserTestData.user.getCaloriesPerDay())));
     }
 }
