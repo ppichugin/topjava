@@ -89,7 +89,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         List<MealTo> expectedTos = MealsUtil.getFilteredTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY,
                 LocalTime.of(10, 0),
                 LocalTime.of(13, 5));
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
                 .param("startDate", "2020-01-30")
                 .param("startTime", "10:00")
                 .param("endDate", "2020-01-31")
@@ -102,7 +102,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenWithNulls() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
                 .param("startDate", "")
                 .param("startTime", "")
                 .param("endDate", "")
