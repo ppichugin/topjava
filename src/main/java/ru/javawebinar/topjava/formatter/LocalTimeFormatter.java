@@ -21,6 +21,6 @@ public final class LocalTimeFormatter implements Formatter<LocalTime> {
     @Override
     @NotNull
     public String print(@NotNull LocalTime localTime, @NotNull Locale locale) {
-        return localTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        return localTime.format(DateTimeFormatter.ISO_TIME);
     }
 }

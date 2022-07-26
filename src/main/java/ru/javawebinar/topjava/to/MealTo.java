@@ -1,8 +1,7 @@
 package ru.javawebinar.topjava.to;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class MealTo {
     private Integer id;
@@ -51,5 +50,21 @@ public class MealTo {
                 ", calories=" + calories +
                 ", excess=" + excess +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealTo mealTo)) return false;
+        return getCalories() == mealTo.getCalories()
+                && isExcess() == mealTo.isExcess()
+                && getId().equals(mealTo.getId())
+                && getDateTime().equals(mealTo.getDateTime())
+                && getDescription().equals(mealTo.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getDateTime(), getDescription(), getCalories(), isExcess());
     }
 }

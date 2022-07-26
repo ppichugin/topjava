@@ -5,16 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
-import static ru.javawebinar.topjava.util.MealsUtil.getTos;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -87,9 +83,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        List<MealTo> expectedTos = MealsUtil.getFilteredTos(meals, UserTestData.user.getCaloriesPerDay(),
-                LocalTime.of(10, 0),
-                LocalTime.of(13, 5));
+        List<MealTo> expectedTos = filteredMealTos;
         perform(MockMvcRequestBuilders.get(REST_URL + "filter")
                 .param("startDate", "2020-01-30")
                 .param("startTime", "10:00")
@@ -104,13 +98,10 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void getBetweenWithNulls() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "filter")
-                .param("startDate", "")
-                .param("startTime", "")
-                .param("endDate", "")
-                .param("endTime", ""))
+                .param("startDate", ""))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, UserTestData.user.getCaloriesPerDay())));
+                .andExpect(MEAL_TO_MATCHER.contentJson(mealTos));
     }
 }

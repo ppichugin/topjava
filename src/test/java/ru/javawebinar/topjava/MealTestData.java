@@ -30,7 +30,13 @@ public class MealTestData {
     public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, of(2020, Month.JANUARY, 31, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
-    public static final List<MealTo> mealTos = MealsUtil.getTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY);
+    public static final List<MealTo> mealTos = MealsUtil.getTos(meals, UserTestData.user.getCaloriesPerDay());
+    public static final List<MealTo> filteredMealTos = List.of(
+            MealsUtil.createTo(meal6, true),
+            MealsUtil.createTo(meal5, true),
+            MealsUtil.createTo(meal2, false),
+            MealsUtil.createTo(meal1, false)
+    );
 
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
