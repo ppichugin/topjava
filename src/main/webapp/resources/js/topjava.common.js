@@ -81,17 +81,6 @@ function failNoty(jqXHR) {
     failedNote.show()
 }
 
-function filter() {
-    $.ajax({
-        type: "GET",
-        url: ctx.ajaxUrl + "filter",
-        data: formWithFilter.serialize()
-    }).done(function (data) {
-        refreshTable(data);
-        successNoty("Meal has been filtered");
-    });
-}
-
 function refreshTable(data) {
     ctx.datatableApi.clear().rows.add(data).draw();
 }
