@@ -13,27 +13,30 @@
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
 
-        <form method="get" action="meals/filter">
+        <form method="post" id="mealsFilter">
             <table class="table table-striped">
                 <hr>
                 <tr>
-                    <td><spring:message code="meal.startDate"/>:</td>
-                    <td><input type="date" name="startDate" value="${param.startDate}"></td>
+                    <td><label for="startDate"><spring:message code="meal.startDate"/>:</label></td>
+                    <td><input type="date" class="form-control" id="startDate" name="startDate"></td>
                 </tr>
                 <tr>
-                    <td><spring:message code="meal.endDate"/>:</td>
-                    <td><input type="date" name="endDate" value="${param.endDate}"></td>
+                    <td><label for="endDate"><spring:message code="meal.endDate"/>:</label></td>
+                    <td><input type="date" class="form-control" id="endDate" name="endDate"></td>
                 </tr>
                 <tr>
-                    <td><spring:message code="meal.startTime"/>:</td>
-                    <td><input type="time" name="startTime" value="${param.startTime}"></td>
+                    <td><label for="startTime"><spring:message code="meal.startTime"/>:</label></td>
+                    <td><input type="time" class="form-control" id="startTime" name="startTime"></td>
                 </tr>
                 <tr>
-                    <td><spring:message code="meal.endTime"/>:</td>
-                    <td><input type="time" name="endTime" value="${param.endTime}"></td>
+                    <td><label for="endTime"><spring:message code="meal.endTime"/>:</label></td>
+                    <td><input type="time" class="form-control" id="endTime" name="endTime"></td>
                 </tr>
             </table>
-            <button class="btn btn-outline-secondary" type="submit"><spring:message code="meal.filter"/></button>
+            <div class="card-footer text-right">
+                <button class="btn btn-secondary" type="button" onclick="filter()">
+                    <span class="fa fa-check"></span><spring:message code="meal.filter"/></button>
+            </div>
             <hr>
         </form>
 
