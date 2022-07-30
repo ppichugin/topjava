@@ -7,7 +7,7 @@ const ctx = {
 
 // $(document).ready(function () {
 $(function () {
-    makeEditable(
+    makeEditableUser(
         $("#datatable").DataTable({
             "paging": false,
             "info": true,
@@ -45,3 +45,26 @@ $(function () {
         })
     );
 });
+
+function makeEditableUser(datatableApi) {
+    makeEditable(datatableApi)
+    $('#datatable :checkbox').change(function () {
+        enable($(this));
+    });
+}
+
+function enable(checkbox) {
+    const enable = checkbox.is(":checked");
+    const id = checkbox.closest('tr').attr("id");
+    $.ajax({
+        url: ctx.ajaxUrl + id,
+        type: "POST",
+        data: {enabled: enable},
+    }).done(function () {
+        checkbox.closest('tr').attr("data-user-enabled", enable);
+        successNoty(enable ? "Account enabled" : "Account disabled");
+    }).fail(function () {
+        checkbox.prop('checked', !enable);
+        successNoty("Nothing changed");
+    })
+}
