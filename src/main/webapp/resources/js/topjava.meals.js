@@ -1,7 +1,16 @@
 const mealAjaxUrl = "profile/meals/";
 
 const ctx = {
-    ajaxUrl: mealAjaxUrl
+    ajaxUrl: mealAjaxUrl,
+    updateOnFly: function () {
+        $.ajax({
+            type: "GET",
+            url: ctx.ajaxUrl + "filter",
+            data: formWithFilter.serialize()
+        }).done(function (data) {
+            refreshTable(data);
+        });
+    }
 };
 
 $(function () {

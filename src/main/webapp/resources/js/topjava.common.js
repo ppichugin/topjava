@@ -29,7 +29,7 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        ctx.updateOnFly();
         successNoty("Deleted");
     });
 }
@@ -47,7 +47,7 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        ctx.updateOnFly();
         successNoty("Saved");
     });
 }
