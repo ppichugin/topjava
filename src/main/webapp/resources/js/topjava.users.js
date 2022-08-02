@@ -2,12 +2,15 @@ const userAjaxUrl = "admin/users/";
 
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
-    ajaxUrl: userAjaxUrl
+    ajaxUrl: userAjaxUrl,
+    updateOnFly: function () {
+        $.get(userAjaxUrl, refreshTable);
+    }
 };
 
 // $(document).ready(function () {
 $(function () {
-    makeEditableUser(
+    makeEditable(
         $("#datatable").DataTable({
             "paging": false,
             "info": true,
@@ -45,13 +48,6 @@ $(function () {
         })
     );
 });
-
-function makeEditableUser(datatableApi) {
-    makeEditable(datatableApi)
-    $('#datatable :checkbox').change(function () {
-        enable($(this));
-    });
-}
 
 function enable(checkbox) {
     const enable = checkbox.is(":checked");

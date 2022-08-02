@@ -34,7 +34,7 @@
                 </tr>
             </table>
             <div class="card-footer text-right">
-                <button class="btn btn-outline-secondary" type="button" onclick="filter()">
+                <button class="btn btn-outline-secondary" type="button" onclick="ctx.updateOnFly()">
                     <span class="fa fa-filter"></span><spring:message code="meal.filter"/></button>
                 <button class="btn btn-outline-danger" type="button" onclick="clearFilter()">
                     <span class="fa fa-close"></span><spring:message code="common.cancel"/></button>
