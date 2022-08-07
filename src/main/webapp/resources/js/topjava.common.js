@@ -23,6 +23,9 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
+            if (key === "dateTime") {
+                value = getDtFormatted(value);
+            }
             form.find("input[name='" + key + "']").val(value);
         });
         $('#editRow').modal();
@@ -55,6 +58,10 @@ function save() {
         ctx.updateTable();
         successNoty("common.saved");
     });
+}
+
+function getDtFormatted(date) {
+    return date.replace('T', ' ').substring(0, 16);
 }
 
 let failedNote;

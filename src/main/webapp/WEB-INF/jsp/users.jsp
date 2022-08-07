@@ -78,7 +78,7 @@
 </div>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
-<spring:message code="user.add" var="add"/>
-<spring:message code="user.edit" var="edit"/>
-<jsp:include page="fragments/i18n.jsp"/>
+<jsp:include page="fragments/i18n.jsp">
+    <jsp:param name="context" value="user"/>
+</jsp:include>
 </html>
