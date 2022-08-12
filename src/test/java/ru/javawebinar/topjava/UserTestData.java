@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.json.JsonUtil;
@@ -36,10 +38,19 @@ public class UserTestData {
         admin.setMeals(List.of(adminMeal2, adminMeal1));
     }
 
+    @NotNull
+    @Contract(" -> new")
     public static User getNew() {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
     }
 
+    @NotNull
+    @Contract(" -> new")
+    public static User getNewInvalid() {
+        return new User(null, "NewInvalid", "newGmailCom", "nopas", 9, false, new Date(), Collections.singleton(Role.USER));
+    }
+
+    @NotNull
     public static User getUpdated() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");
@@ -49,6 +60,18 @@ public class UserTestData {
         updated.setEnabled(false);
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
+    }
+
+    @NotNull
+    public static User getUpdatedInvalid() {
+        User invalidUpdated = new User(user);
+        invalidUpdated.setEmail("newGmail.com");
+        invalidUpdated.setName("test");
+        invalidUpdated.setCaloriesPerDay(8);
+        invalidUpdated.setPassword("123");
+        invalidUpdated.setEnabled(false);
+        invalidUpdated.setRoles(Collections.singletonList(Role.ADMIN));
+        return invalidUpdated;
     }
 
     public static String jsonWithPassword(User user, String passw) {
