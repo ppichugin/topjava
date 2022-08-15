@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -52,7 +52,6 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseBody
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         String rootMsg = ValidationUtil.getRootCause(e).getMessage();
         if (rootMsg != null) {
@@ -69,9 +68,9 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler(BindException.class)
-    public ErrorInfo BindValidationError(HttpServletRequest req, BindException e) {
+    public ErrorInfo bindValidationError(HttpServletRequest req, @NotNull BindException e) {
         String[] details = e.getBindingResult().getFieldErrors().stream()
-                .map(fe -> "Поле " + fe.getField() + ' ' + messageSource.getMessage(fe, LocaleContextHolder.getLocale()))
+                .map(fe -> String.format("'%s' %s", fe.getField(), fe.getDefaultMessage()))
                 .toArray(String[]::new);
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, details);
     }

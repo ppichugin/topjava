@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <nav class="navbar navbar-dark bg-dark py-0">
     <div class="container">
@@ -28,14 +29,19 @@
         </sec:authorize>
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbar-drop" data-toggle="dropdown">
                     ${pageContext.response.locale}
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href='${pageContext.request.contextPath}?locale=en'>English</a>
-                    <a class="dropdown-item" href='${pageContext.request.contextPath}?locale=ru'>Русский</a>
+                    <a class="dropdown-item"
+                       href="<%=request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)%>?lang=en">English</a>
+                    <a class="dropdown-item"
+                       href="<%=request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)%>?lang=ru">Русский</a>
                 </div>
             </li>
         </ul>
     </div>
 </nav>
+<script type="text/javascript">
+    const locale = "${pageContext.response.locale}";
+</script>

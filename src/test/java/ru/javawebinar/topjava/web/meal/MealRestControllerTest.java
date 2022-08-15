@@ -45,7 +45,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getUnauth() throws Exception {
+    void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + MEAL1_ID))
                 .andExpect(status().isUnauthorized());
     }
@@ -91,6 +91,19 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(invalid)))
                 .andExpect(status().isUnprocessableEntity())
+                .andExpect(getError(VALIDATION_ERROR));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateDuplicate() throws Exception {
+        Meal duplicate = getUpdated();
+        duplicate.setDateTime(meal2.getDateTime());
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(duplicate)))
+                .andExpect(status().isConflict())
                 .andExpect(getError(VALIDATION_ERROR));
     }
 

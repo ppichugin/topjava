@@ -112,6 +112,20 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateDuplicate() throws Exception {
+        User duplicate = getNew();
+        duplicate.setEmail(admin.getEmail());
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(duplicate, duplicate.getPassword())))
+                .andExpect(content().string(containsString(getMessage(DUPLICATE_EMAIL_ERROR_MESSAGE))))
+                .andExpect(status().isConflict())
+                .andExpect(getError(VALIDATION_ERROR));
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
